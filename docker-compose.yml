@@ -1,0 +1,18 @@
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: redis30days
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes # AOF 持久化
+    volumes:
+      - redis-data:/data # docker 管理目錄掛載到容器內
+
+  # 圖形化介面，非必要
+  redisinsight:
+    image: redis/redisinsight:latest
+    ports:
+      - "5540:5540"
+
+volumes:
+  redis-data: # 宣告
