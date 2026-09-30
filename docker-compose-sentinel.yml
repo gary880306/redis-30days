@@ -1,0 +1,60 @@
+# Day 17 Sentinel：一主二從 + 三個 Sentinel
+name: day17
+
+services:
+  net: # 什麼都不做，只負責開網路跟 port，其他台都借它的網路
+    image: redis:7-alpine
+    container_name: day17-net
+    command: sleep infinity
+    init: true # 讓 docker stop 不用等 10 秒
+    ports:
+      - "6380-6382:6380-6382" # 三台 Redis
+      - "26379-26381:26379-26381" # 三個 Sentinel
+
+  redis-1:
+    image: redis:7-alpine
+    container_name: redis-1
+    network_mode: service:net # 跟 net 共用網路，彼此用 127.0.0.1 + port 就找得到
+    command: redis-server --port 6380
+
+  redis-2:
+    image: redis:7-alpine
+    container_name: redis-2
+    network_mode: service:net
+    command: redis-server --port 6381 --replicaof 127.0.0.1 6380
+
+  redis-3:
+    image: redis:7-alpine
+    container_name: redis-3
+    network_mode: service:net
+    command: redis-server --port 6382 --replicaof 127.0.0.1 6380
+
+  sentinel-1:
+    image: redis:7-alpine
+    container_name: sentinel-1
+    network_mode: service:net
+    command: >
+      sh -c "touch /tmp/sentinel.conf &&
+      redis-sentinel /tmp/sentinel.conf --port 26379
+      --sentinel monitor mymaster 127.0.0.1 6380 2
+      --sentinel down-after-milliseconds mymaster 5000"
+
+  sentinel-2:
+    image: redis:7-alpine
+    container_name: sentinel-2
+    network_mode: service:net
+    command: >
+      sh -c "touch /tmp/sentinel.conf &&
+      redis-sentinel /tmp/sentinel.conf --port 26380
+      --sentinel monitor mymaster 127.0.0.1 6380 2
+      --sentinel down-after-milliseconds mymaster 5000"
+
+  sentinel-3:
+    image: redis:7-alpine
+    container_name: sentinel-3
+    network_mode: service:net
+    command: >
+      sh -c "touch /tmp/sentinel.conf &&
+      redis-sentinel /tmp/sentinel.conf --port 26381
+      --sentinel monitor mymaster 127.0.0.1 6380 2
+      --sentinel down-after-milliseconds mymaster 5000"

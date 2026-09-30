@@ -1,0 +1,8 @@
+# Day 17：啟動時加 --spring.profiles.active=sentinel 才會用這份
+# 不寫主節點在哪，改問 Sentinel
+spring:
+  data:
+    redis:
+      sentinel:
+        master: mymaster # 跟 sentinel monitor 取的名字一樣
+        nodes: 127.0.0.1:26379,127.0.0.1:26380,127.0.0.1:26381 # 三個 Sentinel
