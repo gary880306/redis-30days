@@ -1,0 +1,7 @@
+# Day 18：啟動時加 --spring.profiles.active=cluster 才會用這份
+# 不用六台都寫，連上其中一台就問得到整個 Cluster
+spring:
+  data:
+    redis:
+      cluster:
+        nodes: 127.0.0.1:7001,127.0.0.1:7002,127.0.0.1:7003 # 寫幾台當入口，一台掛了還有別台
