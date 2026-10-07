@@ -39,6 +39,13 @@
             <version>33.7.2-jre</version>
         </dependency>
 
+        <!-- Day 24：分散式鎖。用 3.x 最後一版，跟 Spring Boot 3.4 用同一版 Netty -->
+        <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson</artifactId>
+            <version>3.52.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>
